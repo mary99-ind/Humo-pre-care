@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Humo - Il tuo spazio sicuro</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f7fafc;
+            color: #2d3748;
+        }
+
+        .bg-brand-blue {
+            background-color: #e6f0fa;
+        }
+
+        .bg-brand-green {
+            background-color: #e6f5ea;
+        }
+
+        .bg-brand-peach {
+            background-color: #fcece3;
+        }
+
+        .text-brand-blue {
+            color: #4a90e2;
+        }
+
+        .text-brand-green {
+            color: #48bb78;
+        }
+
+        .chat-container {
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
+            background-repeat: repeat;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #a0aec0;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+            margin: 0 2px;
+        }
+
+        .typing-indicator span:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-indicator span:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* Hide scrollbar for a cleaner look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-full flex items-center justify-center bg-gray-50 overflow-hidden relative">
+    <!-- App Container (Mobile friendly) -->
+    <div id="app-container"
+        class="w-full max-w-md h-full sm:h-[85vh] sm:rounded-3xl sm:shadow-2xl bg-white overflow-hidden flex flex-col relative sm:border-[8px] sm:border-gray-900">
+
+        <!-- Screen 1: Landing Page -->
+        <div id="screen-landing"
+            class="absolute inset-0 flex flex-col items-center justify-center p-8 bg-brand-peach text-center z-50 transition-opacity duration-500">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-6 text-4xl">
+                <svg class="w-14 h-14 text-teal-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M6.5 19C4.0147 19 2 16.9853 2 14.5C2 12.0147 4.0147 10 6.5 10C6.8216 10 7.1353 10.0338 7.4385 10.0977C8.304 7.4621 10.7963 5.5 13.75 5.5C17.4779 5.5 20.5 8.5221 20.5 12.25C20.5 12.3715 20.4968 12.4922 20.4905 12.6121C21.9056 13.2588 22.875 14.708 22.875 16.375C22.875 18.6532 21.0282 20.5 18.75 20.5H6.5Z"
+                        fill="#e6f0fa" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                    <circle cx="10" cy="13" r="1.5" fill="currentColor" />
+                    <circle cx="16" cy="13" r="1.5" fill="currentColor" />
+                    <path d="M11 16C11.5 17 14.5 17 15 16" stroke="currentColor" stroke-width="1.5"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </div>
+            <h1 class="text-5xl font-extrabold text-gray-800 mb-4 tracking-tight">Humo</h1>
+            <p class="text-lg text-gray-700 mb-10 leading-relaxed">
+                Non sei ancora pronto per la terapia?<br>Inizia a capire come stai. È gratis, su WhatsApp.<br><br>
+                <span class="font-semibold text-gray-800">Humo</span> ti accompagnerà per 15 giorni in uno spazio
+                sicuro, per ascoltarti senza fretta e senza giudizio.
+            </p>
+            <button onclick="startSimulation()"
+                class="bg-gray-900 text-white font-bold py-4 px-8 rounded-full shadow-xl hover:scale-105 transform transition w-full text-lg flex items-center justify-center gap-2">
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+                </svg>
+                Parla con Humo
+            </button>
+        </div>
+
+        <!-- App Header (WhatsApp style) -->
+        <div id="app-header" class="bg-teal-600 text-white p-4 flex items-center shadow-md z-10 hidden">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-10 h-10 bg-white rounded-full flex items-center justify-center text-xl shadow-sm text-teal-600">
+                    <svg class="w-6 h-6 text-teal-600" viewBox="0 0 24 24" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M6.5 19C4.0147 19 2 16.9853 2 14.5C2 12.0147 4.0147 10 6.5 10C6.8216 10 7.1353 10.0338 7.4385 10.0977C8.304 7.4621 10.7963 5.5 13.75 5.5C17.4779 5.5 20.5 8.5221 20.5 12.25C20.5 12.3715 20.4968 12.4922 20.4905 12.6121C21.9056 13.2588 22.875 14.708 22.875 16.375C22.875 18.6532 21.0282 20.5 18.75 20.5H6.5Z"
+                            fill="#e6f0fa" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" />
+                        <circle cx="10" cy="13" r="1.5" fill="currentColor" />
+                        <circle cx="16" cy="13" r="1.5" fill="currentColor" />
+                        <path d="M11 16C11.5 17 14.5 17 15 16" stroke="currentColor" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="font-bold text-lg leading-tight">Humo</h2>
+                    <p class="text-xs text-teal-100">online</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div id="chat-area"
+            class="flex-1 chat-container overflow-y-auto p-4 flex flex-col gap-4 no-scrollbar pb-24 hidden">
+            <!-- Messages will be injected here -->
+        </div>
+
+        <!-- Input Area -->
+        <div id="input-area" class="bg-[#f0f2f5] p-3 flex flex-col gap-2 z-10 hidden border-t border-gray-200">
+            <div id="controls-container" class="flex justify-center w-full min-h-[50px]">
+                <!-- Buttons or input will be injected here -->
+            </div>
+        </div>
+
+        <!-- Conversion Pitch Screen -->
+        <div id="screen-pitch" class="absolute inset-0 bg-white flex flex-col z-40 hidden overflow-y-auto no-scrollbar">
+            <div class="p-6 pb-20 pt-12 flex flex-col items-center">
+                <div
+                    class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center text-2xl mb-4">
+                    📊
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Il tuo Report di 2 Settimane<br><span
+                        class="text-sm font-normal text-gray-500">(Simulato)</span></h2>
+
+                <div class="w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-6">
+                    <canvas id="moodChart" width="400" height="250"></canvas>
+                </div>
+
+                <div id="pitch-report-text"
+                    class="bg-blue-50 text-blue-900 p-5 rounded-2xl mb-8 leading-relaxed text-center shadow-inner">
+                    <!-- Injected dynamically by showPitchScreen() -->
+                </div>
+
+                <div class="text-center w-full max-w-sm mb-6">
+                    <p id="pitch-cta-main" class="text-gray-700 font-medium mb-6"></p>
+                    <p class="text-gray-600 mb-6 text-sm font-bold">Vuoi fare una chiacchierata conoscitiva gratuita?
+                    </p>
+                </div>
+
+                <button onclick="showThankYou()"
+                    class="bg-teal-600 text-white font-bold py-4 px-6 rounded-full shadow-lg hover:bg-teal-700 transform transition w-full text-lg mb-4">
+                    Prenota Colloquio Gratuito
+                </button>
+                <button onclick="location.reload()"
+                    class="text-gray-500 font-medium py-2 px-6 rounded-full hover:bg-gray-100 transition w-full">
+                    Ricomincia Demo
+                </button>
+            </div>
+        </div>
+
+        <!-- Thank You Screen -->
+        <div id="screen-thanks"
+            class="absolute inset-0 bg-teal-50 flex flex-col items-center justify-center p-8 text-center z-[60] hidden">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-lg mb-6 text-5xl">
+                🎉
+            </div>
+            <h2 class="text-4xl font-bold text-teal-800 mb-4">Grazie!</h2>
+            <p class="text-lg text-teal-900 mb-8">
+                La tua chiacchierata conoscitiva è stata prenotata (simulazione).<br>Un professionista Serenis ti
+                aspetta.
+            </p>
+            <button onclick="location.reload()"
+                class="bg-teal-600 text-white font-bold py-3 px-8 rounded-full shadow-lg hover:scale-105 transform transition">
+                Torna all'inizio
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // State
+        const state = {
+            step: 0,
+            userScores: [],
+            userTheme: 'alle difficoltà quotidiane',
+            accumulatedText: ''
+        };
+
+        // DOM Elements
+        const screenLanding = document.getElementById('screen-landing');
+        const screenPitch = document.getElementById('screen-pitch');
+        const screenThanks = document.getElementById('screen-thanks');
+        const appHeader = document.getElementById('app-header');
+        const chatArea = document.getElementById('chat-area');
+        const inputArea = document.getElementById('input-area');
+        const controlsContainer = document.getElementById('controls-container');
+
+        // Helpers
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }, 50);
+        }
+
+        async function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function showTyping() {
+            const id = 'typing-' + Date.now();
+            const html = `
+                <div id="${id}" class="flex w-full mb-4 fade-in">
+                    <div class="bg-white text-gray-800 p-3 rounded-2xl rounded-tl-sm shadow-sm max-w-[85%]">
+                        <div class="typing-indicator flex items-center h-4">
+                            <span></span><span></span><span></span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            chatArea.insertAdjacentHTML('beforeend', html);
+            scrollToBottom();
+            return id;
+        }
+
+        function removeTyping(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function addBotMessage(text) {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const html = `
+                <div class="flex w-full mb-4 fade-in">
+                    <div class="bg-white text-gray-800 p-3 rounded-2xl rounded-tl-sm shadow-sm max-w-[85%] text-[15px] leading-relaxed relative min-w-[100px]">
+                        ${text}
+                        <div class="text-[10px] text-gray-400 absolute right-2 bottom-1 block text-right mt-1">${time}</div>
+                        <div class="h-3"></div>
+                    </div>
+                </div>
+            `;
+            chatArea.insertAdjacentHTML('beforeend', html);
+            scrollToBottom();
+        }
+
+        function addUserMessage(text) {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const html = `
+                <div class="flex w-full mb-4 justify-end fade-in">
+                    <div class="bg-[#dcf8c6] text-gray-800 p-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%] text-[15px] leading-relaxed relative min-w-[80px]">
+                        ${text}
+                        <div class="flex justify-end items-center gap-1 mt-1 absolute right-2 bottom-1">
+                            <span class="text-[10px] text-gray-500">${time}</span>
+                            <svg class="w-3 h-3 text-blue-500" viewBox="0 0 16 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15.01 3.313l-2.81-2.813a.996.996 0 00-1.414 0l-5.656 5.656L2.31 3.336a.996.996 0 00-1.414 0L.187 4.045a.996.996 0 000 1.414l4.243 4.242a.996.996 0 001.414 0l8.485-8.485a.996.996 0 000-1.414z" fill="currentColor"/><path d="M10.767 11.455l-2.81-2.813a.996.996 0 00-1.414 0l-2.828 2.828L.187 7.943a.996.996 0 000 1.414l4.243 4.242a.996.996 0 001.414 0l4.242-4.242a.996.996 0 000-1.414l.681.682-1.414 1.414z" fill="currentColor"/></svg>
+                        </div>
+                        <div class="h-3"></div>
+                    </div>
+                </div>
+            `;
+            chatArea.insertAdjacentHTML('beforeend', html);
+            scrollToBottom();
+        }
+
+        function addDivider(text) {
+            const html = `
+                <div class="flex justify-center my-4 fade-in">
+                    <span class="bg-[#e1f0fa] text-gray-600 text-xs py-1 px-3 rounded-lg shadow-sm font-medium uppercase tracking-wider">
+                        ${text}
+                    </span>
+                </div>
+            `;
+            chatArea.insertAdjacentHTML('beforeend', html);
+            scrollToBottom();
+        }
+
+        // UI Controls
+        function showNumberButtons() {
+            controlsContainer.innerHTML = `
+                <div class="flex justify-between w-full gap-2 p-1 fade-in">
+                    ${[1, 2, 3, 4, 5].map(n => `
+                        <button onclick="handleNumberClick(${n})" class="w-12 h-12 rounded-full bg-white border border-teal-500 text-teal-600 font-bold text-lg shadow-sm hover:bg-teal-50 hover:scale-105 transform transition">
+                            ${n}
+                        </button>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function showTextInput() {
+            controlsContainer.innerHTML = `
+                <div class="flex w-full gap-2 items-end fade-in">
+                    <div class="flex-1 bg-white rounded-2xl px-4 py-2 shadow-sm border border-gray-300">
+                        <textarea id="chat-input" rows="1" placeholder="Scrivi un messaggio..." class="w-full bg-transparent outline-none resize-none text-[15px] max-h-24 overflow-y-auto"></textarea>
+                    </div>
+                    <div class="flex flex-col gap-1 items-center justify-center">
+                        <button onclick="handleTextSubmit(true)" class="bg-teal-600 text-white p-3 rounded-full shadow-sm hover:bg-teal-700 transition w-11 h-11 flex items-center justify-center">
+                            <svg class="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                        </button>
+                        <button onclick="handleTextSubmit(false)" class="text-[10px] text-gray-500 hover:text-gray-700 font-medium py-1 px-2 uppercase">
+                            Salta
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Auto-resize textarea
+            const tx = document.getElementById('chat-input');
+            tx.setAttribute('style', 'height:' + (tx.scrollHeight) + 'px;overflow-y:hidden;');
+            tx.addEventListener("input", function () {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            }, false);
+            tx.focus();
+        }
+
+        function showActionButton(label, onClick) {
+            controlsContainer.innerHTML = `
+                <button onclick="${onClick}" class="w-full bg-teal-100 text-teal-800 border border-teal-200 font-bold py-3 rounded-xl shadow-sm hover:bg-teal-200 transition fade-in">
+                    ${label}
+                </button>
+            `;
+        }
+
+        function clearControls() {
+            controlsContainer.innerHTML = '';
+        }
+
+        // Flow Logic
+        async function startSimulation() {
+            screenLanding.style.opacity = '0';
+            setTimeout(async () => {
+                screenLanding.classList.add('hidden');
+                appHeader.classList.remove('hidden');
+                chatArea.classList.remove('hidden');
+                inputArea.classList.remove('hidden');
+
+                addDivider('Oggi');
+
+                const typingId = showTyping();
+                await sleep(1500);
+                removeTyping(typingId);
+
+                addBotMessage("Ciao Marco! 👋 Da 1 a 5, come valuti la tua giornata oggi? (1 = davvero faticosa 🌧️, 5 = super positiva ☀️). Clicca su un numero!");
+                showNumberButtons();
+                state.step = 1;
+            }, 500);
+        }
+
+        async function handleNumberClick(num) {
+            clearControls();
+            addUserMessage(num.toString());
+
+            state.userScores.push(num);
+
+            const typingId = showTyping();
+            await sleep(1500);
+            removeTyping(typingId);
+
+            // Adaptive empathy: follow-up message varies based on score
+            let followUp;
+            if (num <= 2) {
+                followUp = "Mi dispiace che sia stata dura. 🌧️ Ti va di scrivermi cosa ti ha buttato giù? Altrimenti ci sentiamo domani.";
+            } else if (num === 3) {
+                followUp = "Una giornata neutra. C'è un pensiero che ti va di condividere? Altrimenti ci sentiamo domani. 🌱";
+            } else {
+                followUp = "Che bello! ☀️ Cos'è che ti ha fatto stare così bene oggi? Scrivilo pure, o ci sentiamo domani!";
+            }
+
+            if (state.step === 1) {
+                addBotMessage(followUp);
+                showTextInput();
+                state.step = 2;
+            } else if (state.step === 3) {
+                addBotMessage(followUp);
+                showTextInput();
+                state.step = 4;
+            } else if (state.step === 5) {
+                addBotMessage(followUp);
+                showTextInput();
+                state.step = 6;
+            }
+        }
+
+        async function handleTextSubmit(hasText) {
+            const input = document.getElementById('chat-input');
+            const userText = input && input.value.trim() !== '' ? input.value : '';
+
+            clearControls();
+
+            if (hasText && userText !== '') {
+                addUserMessage(userText);
+
+                // === LIVELLO 0: EMERGENZA ASSOLUTA ===
+                const safetyLower = userText.toLowerCase();
+                const crisisKeywords = [
+                    'suicidio', 'suicidarmi', 'morire', 'farla finita',
+                    'uccidermi', 'ammazzarmi', 'farmi del male',
+                    'non voglio più vivere', 'voglio sparire', 'farmi fuori'
+                ];
+                const isCrisis = crisisKeywords.some(kw => safetyLower.includes(kw));
+
+                if (isCrisis) {
+                    const typingId = showTyping();
+                    await sleep(1200);
+                    removeTyping(typingId);
+                    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    const safetyHtml = `
+                        <div class="flex w-full mb-4 fade-in">
+                            <div class="border-2 border-red-300 bg-red-50 text-red-900 p-4 rounded-2xl rounded-tl-sm shadow-sm max-w-[90%] text-[14px] leading-relaxed">
+                                <strong>Humo è un bot automatizzato e non può gestire le emergenze. La tua vita è importante e c'è chi può aiutarti ora. Chiama subito il 112 o il Telefono Amico al 02 2327 2327. Non sei solo.</strong>
+                                <div class="text-[10px] text-red-400 text-right mt-2">${time}</div>
+                            </div>
+                        </div>`;
+                    chatArea.insertAdjacentHTML('beforeend', safetyHtml);
+                    scrollToBottom();
+                    // Mostra pulsante per uscire dal vicolo cieco
+                    controlsContainer.innerHTML = `
+                        <button onclick="location.reload()"
+                            class="text-gray-600 font-medium py-3 px-6 rounded-full border border-gray-300 hover:bg-gray-100 transition w-full">
+                            Ricomincia Demo
+                        </button>`;
+                    return; // BLOCCA IL FLUSSO
+                }
+
+                // === LIVELLO 1: CATEGORIZZAZIONE TEMATICA ESPANSA ===
+                state.accumulatedText += ' ' + userText;
+                const textLower = state.accumulatedText.toLowerCase();
+
+                // Priorità 1: Lutto
+                if (/(mancato|mancata|morto|morta|lutto|funerale|nonna|nonno|mamma|papà|padre|madre|perso un|decesso)/.test(textLower)) {
+                    state.userTheme = 'al dolore per una perdita';
+                    // Priorità 2: Ansia
+                } else if (/(ansia|panico|respiro|petto|paura|futuro|preoccupat|agitazion|tachicardia|insonnia|non dormo)/.test(textLower)) {
+                    state.userTheme = "all'ansia e alle preoccupazioni";
+                    // Priorità 3: Umore depresso
+                } else if (/(triste|depress|vuoto|piangere|apatia|stanc|giù di morale|non ho voglia|buio|solo|solitudine)/.test(textLower)) {
+                    state.userTheme = 'a una forte tristezza e stanchezza emotiva';
+                    // Priorità 4: Lavoro/Studio
+                } else if (/(lavoro|capo|collegh|ufficio|licenziament|esame|tesi|università|professor|bocciat|studiar|carriera)/.test(textLower)) {
+                    state.userTheme = 'allo stress lavorativo o accademico';
+                    // Priorità 5: Relazioni
+                } else if (/(ragazzo|ragazza|fidanzat|partner|marito|moglie|ex|litigat|tradiment|rottura|amici|amic|genitori)/.test(textLower)) {
+                    state.userTheme = 'alle tue relazioni interpersonali';
+                    // Priorità 6: Salute
+                } else if (/(malattia|salute|dolore fisico|ospedale|medico|visita|diagnosi|peso|corpo)/.test(textLower)) {
+                    state.userTheme = 'alle preoccupazioni per la salute';
+                }
+                // === LIVELLO 2: FALLBACK ===
+                // state.userTheme mantiene il default 'alle difficoltà quotidiane' se nessun match
+            } else {
+                addUserMessage("Preferisco non rispondere oggi.");
+            }
+
+            const typingId = showTyping();
+            await sleep(1500);
+            removeTyping(typingId);
+
+            if (state.step === 2) {
+                addBotMessage("Grazie! A domani. 🌙");
+                showActionButton("[Simula Giorno 2]", "simulateDay2()");
+            } else if (state.step === 4) {
+                addBotMessage("Capito. A domani. 💙");
+                showActionButton("[Simula Giorno 3]", "simulateDay3()");
+            } else if (state.step === 6) {
+                addBotMessage("Grazie per aver condiviso. 💙");
+                showActionButton("[Simula Report & Pitch]", "showPitchScreen()");
+            }
+        }
+
+        async function simulateDay2() {
+            clearControls();
+            addDivider('Giorno 2');
+
+            const typingId = showTyping();
+            await sleep(1500);
+            removeTyping(typingId);
+
+            addBotMessage("Bentornato! Da 1 a 5, com'è andata la giornata oggi? 🌤️");
+            showNumberButtons();
+            state.step = 3;
+        }
+
+        async function simulateDay3() {
+            clearControls();
+            addDivider('Giorno 3');
+
+            const typingId = showTyping();
+            await sleep(1500);
+            removeTyping(typingId);
+
+            addBotMessage("Siamo al terzo giorno. 1-5, come ti senti? 🌱");
+            showNumberButtons();
+            state.step = 5;
+        }
+
+        function showPitchScreen() {
+            const sum = state.userScores.reduce((a, b) => a + b, 0);
+            const avg = state.userScores.length > 0 ? (sum / state.userScores.length).toFixed(1) : 2.5;
+            const avgNum = parseFloat(avg);
+
+            const reportTextDiv = document.getElementById('pitch-report-text');
+            const ctaMainDiv = document.getElementById('pitch-cta-main');
+
+            if (avgNum < 3.5) {
+                if (reportTextDiv) {
+                    reportTextDiv.innerHTML = `Nelle ultime settimane, abbiamo notato che il tuo umore ha avuto una media di <strong>${avg}/5</strong>. Molti dei tuoi pensieri andavano <em>${state.userTheme}</em>. Tenerlo dentro non aiuta 💙`;
+                }
+                if (ctaMainDiv) {
+                    ctaMainDiv.textContent = 'Basandoci sui tuoi check-in, abbiamo trovato il terapeuta Serenis perfetto per aiutarti a gestire questo periodo.';
+                }
+            } else {
+                if (reportTextDiv) {
+                    reportTextDiv.innerHTML = `Nelle ultime settimane, il tuo umore è stato <strong>sopra la media</strong> con un punteggio di ${avg}/5! ☀️ Sono felice che tu ti senta bene.`;
+                }
+                if (ctaMainDiv) {
+                    ctaMainDiv.textContent = 'La terapia non serve solo quando si sta male: è uno strumento potentissimo per conoscersi meglio e mantenere questo equilibrio. Abbiamo trovato il terapeuta Serenis perfetto per esplorare il tuo potenziale.';
+                }
+            }
+
+            screenPitch.classList.remove('hidden');
+            renderChart(avg);
+        }
+
+        function showThankYou() {
+            screenPitch.classList.add('hidden');
+            screenThanks.classList.remove('hidden');
+        }
+
+        function renderChart(avgValue) {
+            const avg = parseFloat(avgValue) || 2.5;
+            const score1 = state.userScores[0] || 2;
+            const score2 = state.userScores[1] || 3;
+            const score3 = state.userScores[2] || 2.5;
+
+            const ctx = document.getElementById('moodChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['G1', 'G2', 'G3', 'G5', 'G7', 'G9', 'G11', 'G15'],
+                    datasets: [{
+                        label: 'Umore',
+                        data: [score1, score2, score3, avg, avg, avg, avg, avg],
+                        borderColor: '#4a90e2',
+                        backgroundColor: 'rgba(74, 144, 226, 0.2)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#4a90e2',
+                        pointRadius: 4,
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Media Ottimale',
+                        data: [4, 4, 4, 4, 4, 4, 4, 4],
+                        borderColor: '#e2e8f0',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            min: 1,
+                            max: 5,
+                            ticks: {
+                                stepSize: 1,
+                                color: '#718096'
+                            },
+                            grid: {
+                                color: '#f7fafc'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#718096'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
